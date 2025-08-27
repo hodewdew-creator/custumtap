@@ -102,7 +102,7 @@
       </div>
       <p class="note">Settings are saved locally and persist across restarts unless site data is cleared or the app is uninstalled.</p>
       <div class="btns">
-        <button class="btn secondary" id="closeSettings">Close</button>
+        <button class="btn secondary" id="closeSettings">Reset</button>
         <button class="btn primary" id="saveSettings">Save</button>
       </div>
     </div>
@@ -238,7 +238,16 @@ resetBtn.addEventListener('click', ()=>{ resetAll(); beep(); });
 customBtn.addEventListener('click', ()=> dlg.showModal());
 soundBtn.addEventListener('click', ()=>{ prefs.feedbackOn = !prefs.feedbackOn; updateSoundIcon(); savePrefs(); beep(); });
 
-closeSettingsBtn.addEventListener('click', ()=> dlg.close());
+closeSettingsBtn.addEventListener('click', ()=>{
+  // Reset theme color and remove background (keep dialog open)
+  const defaultHex = '#69b10d';
+  applyTheme(defaultHex);
+  prefs.accent = defaultHex;
+  document.body.style.backgroundImage = 'none';
+  prefs.bgDataUrl = null;
+  document.documentElement.style.setProperty('--outline','#000');
+  savePrefs();
+});
 saveSettingsBtn.addEventListener('click', ()=>{ const hex = themeColor.value || '#69b10d'; applyTheme(hex); savePrefs(); dlg.close(); });
 document.getElementById('xClose').addEventListener('click', ()=> dlg.close());
 
