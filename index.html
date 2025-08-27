@@ -1,53 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="apple-touch-icon" href="icon.png">  
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>BPM counter</title>
-<style>
-  :root{ --accent:#69b10d; --outline:#000; --padAlpha:1; --padBlur:4px; --footerAlpha:0.6; }
-  body { font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0; padding:0; background:#fff; background-size:cover; background-position:center; background-repeat:no-repeat; }
-  .ad-slot { position:fixed; top:0; left:0; right:0; height:60px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748b; border-bottom:1px solid #ddd; z-index:10; }
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>BPM counter</title>
+  <style>
+    :root{ --accent:#69b10d; --outline:#000; --padAlpha:1; --padBlur:4px; --footerAlpha:0.6; }
+    body { font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0; padding:0; background:#fff; background-size:cover; background-position:center; background-repeat:no-repeat; }
+    .ad-slot { position:fixed; top:0; left:0; right:0; height:60px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748b; border-bottom:1px solid #ddd; z-index:10; }
 
-  .app{ height: calc((var(--vh, 1vh) * 100) - 60px - env(safe-area-inset-bottom, 0px)); padding-top:60px; display:flex; flex-direction:column; overflow:hidden; }
+    .app{ height: calc((var(--vh, 1vh) * 100) - 60px - env(safe-area-inset-bottom, 0px)); padding-top:60px; display:flex; flex-direction:column; overflow:hidden; }
 
-  h1 { margin:12px 16px 8px; font-size:22px; font-weight:800; display:flex; justify-content:space-between; align-items:center; }
-  .right { display:flex; align-items:center; gap:8px; }
-  .icon-btn { font-size:18px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
+    h1 { margin:12px 16px 8px; font-size:22px; font-weight:800; display:flex; justify-content:space-between; align-items:center; }
+    .right { display:flex; align-items:center; gap:8px; }
+    .icon-btn { font-size:18px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
 
-  .pad { flex:1; display:flex; align-items:center; justify-content:center; position:relative; margin:0 16px; border:6px solid var(--accent); border-radius:14px; user-select:none; background:rgba(255,255,255,var(--padAlpha)); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(var(--padBlur)); -webkit-backdrop-filter: blur(var(--padBlur)); transition: transform 140ms ease; }
-  .pad.tapped { transform: scale(0.965); }
-  .pad-label { font-size:112px; font-weight:900; color:var(--accent); letter-spacing:.5px;
-    text-shadow:
-      0 0 0 var(--outline),
-      2px 0 0 var(--outline), -2px 0 0 var(--outline),
-      0 2px 0 var(--outline),  0 -2px 0 var(--outline),
-      2px 2px 0 var(--outline), -2px 2px 0 var(--outline),
-      2px -2px 0 var(--outline), -2px -2px 0 var(--outline);
-  }
+    .pad { flex:1; display:flex; align-items:center; justify-content:center; position:relative; margin:0 16px; border:6px solid var(--accent); border-radius:14px; user-select:none; background:rgba(255,255,255,var(--padAlpha)); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(var(--padBlur)); -webkit-backdrop-filter: blur(var(--padBlur)); transition: transform 140ms ease; }
+    .pad.tapped { transform: scale(0.965); }
+    .pad-label { font-size:112px; font-weight:900; color:var(--accent); letter-spacing:.5px;
+      text-shadow:
+        0 0 0 var(--outline),
+        2px 0 0 var(--outline), -2px 0 0 var(--outline),
+        0 2px 0 var(--outline),  0 -2px 0 var(--outline),
+        2px 2px 0 var(--outline), -2px 2px 0 var(--outline),
+        2px -2px 0 var(--outline), -2px -2px 0 var(--outline);
+    }
 
-  .pad-footer { position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:center; gap:18px; padding:8px 12px; border-radius:10px; background: rgba(255,255,255,var(--footerAlpha)); backdrop-filter: blur(calc(var(--padBlur)/2)); -webkit-backdrop-filter: blur(calc(var(--padBlur)/2)); font-weight:700; font-size:14px; letter-spacing:.4px; color:#374151; border:1px solid rgba(0,0,0,0.06); }
-  .pad-footer .label { opacity:.7; margin-right:4px; font-weight:600; }
+    .pad-footer { position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:center; gap:18px; padding:8px 12px; border-radius:10px; background: rgba(255,255,255,var(--footerAlpha)); backdrop-filter: blur(calc(var(--padBlur)/2)); -webkit-backdrop-filter: blur(calc(var(--padBlur)/2)); font-weight:700; font-size:14px; letter-spacing:.4px; color:#374151; border:1px solid rgba(0,0,0,0.06); }
+    .pad-footer .label { opacity:.7; margin-right:4px; font-weight:600; }
 
-  .bottom { display:flex; gap:10px; margin:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
-  .btn { flex:1; height:56px; border:none; border-radius:12px; font-size:18px; font-weight:800; cursor:pointer; }
-  .btn.primary { background:var(--accent); color:#fff; box-shadow:0 10px 20px rgba(105,177,13,.25); }
-  .btn.secondary { background:#eee; color:#111; }
-  .btn.reset{ flex:1.8; }
-  .btn.custom{ flex:0.7; }
+    .bottom { display:flex; gap:10px; margin:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+    .btn { flex:1; height:56px; border:none; border-radius:12px; font-size:18px; font-weight:800; cursor:pointer; }
+    .btn.primary { background:var(--accent); color:#fff; box-shadow:0 10px 20px rgba(105,177,13,.25); }
+    .btn.secondary { background:#eee; color:#111; }
+    .btn.reset{ flex:1.8; }
+    .btn.custom{ flex:0.7; }
 
-  dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
-  .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; }
-  .row { display:flex; align-items:center; gap:10px; }
-  .row label { width:140px; font-size:14px; color:#374151; }
-  input[type="color"]{ width:44px; height:32px; border:none; padding:0; background:none; }
-  input[type="file"]{ font-size:14px; }
-  .btns { display:flex; justify-content:flex-end; gap:8px; }
-  .note { font-size:12px; color:#6b7280; }
+    dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
+    .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; }
+    .row { display:flex; align-items:center; gap:10px; }
+    .row label { width:140px; font-size:14px; color:#374151; }
+    input[type="color"]{ width:44px; height:32px; border:none; padding:0; background:none; }
+    input[type="file"]{ font-size:14px; }
+    .btns { display:flex; justify-content:flex-end; gap:8px; }
+    .note { font-size:12px; color:#6b7280; }
 
-  @media (max-width:480px){ .pad-label{ font-size:120px; } }
-</style>
+    @media (max-width:480px){ .pad-label{ font-size:120px; } }
+
+    /* Hidden developer notes: To add more settings later, attach inputs here and
+       bind them into `prefs` similarly to accent/bgDataUrl. */
+  </style>
 </head>
 <body>
   <div class="ad-slot">Ad slot (replace with ad script)</div>
@@ -226,7 +229,7 @@ customBtn.addEventListener('click', ()=> dlg.showModal());
 soundBtn.addEventListener('click', ()=>{ prefs.feedbackOn = !prefs.feedbackOn; updateSoundIcon(); savePrefs(); beep(); });
 
 closeSettingsBtn.addEventListener('click', ()=> dlg.close());
-saveSettingsBtn.addEventListener('click', ()=>{ applyTheme(themeColor.value || '#69b10d'); savePrefs(); dlg.close(); });
+saveSettingsBtn.addEventListener('click', ()=>{ const hex = themeColor.value || '#69b10d'; applyTheme(hex); savePrefs(); dlg.close(); });
 
 bgFile.addEventListener('change', ()=>{
   const f = bgFile.files && bgFile.files[0];
@@ -237,7 +240,12 @@ bgFile.addEventListener('change', ()=>{
 });
 clearBg.addEventListener('click', ()=>{ document.body.style.backgroundImage = 'none'; prefs.bgDataUrl = null; savePrefs(); document.documentElement.style.setProperty('--outline','#000'); });
 
-function applyTheme(hex){ document.documentElement.style.setProperty('--accent', hex); themeColor.value = hex; }
+// ★ FIX: also persist the chosen accent color into prefs so it survives restarts
+function applyTheme(hex){
+  document.documentElement.style.setProperty('--accent', hex);
+  themeColor.value = hex;
+  prefs.accent = hex; // <— key line: keep prefs in sync
+}
 function savePrefs(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(prefs)); }
 
 function updateOutlineByBackground(dataUrl){
@@ -269,4 +277,3 @@ function updateOutlineByBackground(dataUrl){
 </script>
 </body>
 </html>
-
