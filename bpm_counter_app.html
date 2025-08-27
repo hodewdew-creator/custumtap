@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>my BPM counter</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; display:flex; flex-direction:column; height:100vh; background:#fff; background-size:cover; background-position:center; background-repeat:no-repeat; }
+  .ad-slot { height:60px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748b; border-bottom:1px solid #ddd; }
+  h1 { margin:16px; font-size:22px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; }
+  .right { display:flex; align-items:center; gap:8px; }
+  .icon-btn { font-size:20px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
+  #soundBtn { font-size:18px; }
+  .pad { flex:1; display:flex; align-items:center; justify-content:center; border:3px solid var(--accent, #69b10d); margin:0 16px; border-radius:12px; user-select:none; background:rgba(255,255,255,0.7); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(3px); }
+  .pad-label { font-size:36px; font-weight:bold; color:var(--accent, #69b10d); }
+  .status { text-align:center; margin:8px 0; font-size:14px; }
+  .bottom { display:flex; justify-content:center; gap:10px; margin:12px; }
+  .btn { flex:1; height:48px; border:none; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; }
+  .btn.primary { background:var(--accent, #69b10d); color:#fff; }
+  .btn.secondary { background:#eee; color:#111; }
+
+  /* settings dialog */
+  dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
+  .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; }
+  .row { display:flex; align-items:center; gap:10px; }
+  .row label { width:140px; font-size:14px; color:#374151; }
+  input[type="color"]{ width:44px; height:32px; border:none; padding:0; background:none; }
+  input[type="file"]{ font-size:14px; }
+  .btns { display:flex; justify-content:flex-end; gap:8px; }
+  .note { font-size:12px; color:#6b7280; }
+</style>
+</head>
+<body>
+  <div class="ad-slot">Ad slot (replace with ad script)</div>
+  <h1>
+    my BPM counter
+    <span class="right">
+      <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
+      <button class="icon-btn" id="soundBtn" title="Feedback On/Off">🔊</button>
+    </span>
+  </h1>
+
+  <div class="pad" id="pad"><div class="pad-label" id="padLabel">TAP!</div></div>
+  <div class="status"><span id="tapCount">Taps: 0</span> · <span id="elapsed">Elapsed: 0s</span></div>
+  <div class="bottom">
+    <button class="btn primary" id="resetBtn">RESET</button>
+    <button class="btn secondary" id="modeBtn">MODE: HR</button>
+  </div>
+
+  <!-- Settings dialog -->
+  <dialog id="settings">
+    <div class="sheet">
+      <h3 style="margin:6px 2px 0;">Personal interface</h3>
+      <div class="row">
+        <label for="themeColor">Theme color</label>
+        <input type="color" id="themeColor" value="#69b10d" />
+      </div>
+      <div class="row">
+        <label for="bgFile">Background image</label>
+        <input type="file" id="bgFile" accept="image/*" />
+        <button class="icon-btn" id="clearBg" title="Remove background">🧹</button>
+      </div>
+      <p class="note">Settings are saved locally and persist across restarts unless site data is cleared or the app is uninstalled.</p>
+      <div class="btns">
+        <button class="btn secondary" id="closeSettings">Close</button>
+        <button class="btn primary" id="saveSettings">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+// ===== State =====
+let taps = [];
+let startTs = 0;
+let timerId = null;
+let mode = localStorage.getItem('mode') || 'HR';
+
+const SETTINGS_KEY = 'bpm_prefs_v1'; // { accent, bgDataUrl, feedbackOn }
+
+// Elements
+const pad = document.getElementById('pad');
+const padLabel = document.getElementById('padLabel');
+const tapCountEl = document.getElementById('tapCount');
+const elapsedEl = document.getElementById('elapsed');
+const resetBtn = document.getElementById('resetBtn');
+const modeBtn = document.getElementById('modeBtn');
+const soundBtn = document.getElementById('soundBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const dlg = document.getElementById('settings');
+const themeColor = document.getElementById('themeColor');
+const bgFile = document.getElementById('bgFile');
+const clearBg = document.getElementById('clearBg');
+const saveSettingsBtn = document.getElementById('saveSettings');
+const closeSettingsBtn = document.getElementById('closeSettings');
+
+// ===== Preferences load/apply =====
+function loadPrefs(){
+  try{
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if(!raw) return { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
+    const obj = JSON.parse(raw);
+    if(typeof obj.accent !== 'string') obj.accent = '#69b10d';
+    if(typeof obj.feedbackOn !== 'boolean') obj.feedbackOn = true;
+    return obj;
+  }catch(e){
+    return { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
+  }
+}
+let prefs = loadPrefs();
+applyTheme(prefs.accent);
+if(prefs.bgDataUrl){ document.body.style.backgroundImage = `url(${prefs.bgDataUrl})`; }
+updateSoundIcon();
+
+// ===== Beep sound (Web Audio) with vibration fallback =====
+let audioCtx = null;
+function ensureAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e){ audioCtx = null; }
+  } else if(audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(()=>{});
+  }
+}
+function beep(){
+  if(!prefs.feedbackOn) return;
+  let sounded = false;
+  try{
+    ensureAudio();
+    if(audioCtx){
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = 880; // "띵" 느낌
+      g.gain.value = 0.0001;
+      o.connect(g).connect(audioCtx.destination);
+      const t = audioCtx.currentTime;
+      g.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.10);
+      o.start(t); o.stop(t + 0.11);
+      sounded = true;
+    }
+  }catch(e){ sounded = false; }
+  if(!sounded && navigator.vibrate){ navigator.vibrate(18); }
+}
+function updateSoundIcon(){ soundBtn.textContent = prefs.feedbackOn ? '🔊' : '🔇'; }
+
+// ===== Core compute (original app style: simple average) =====
+function resetAll(){
+  taps = [];
+  startTs = 0;
+  clearInterval(timerId); timerId=null;
+  padLabel.textContent = 'TAP!';
+  tapCountEl.textContent = 'Taps: 0';
+  elapsedEl.textContent = 'Elapsed: 0s';
+}
+function formatElapsed(ms){ return `${Math.floor(ms/1000)}s`; }
+function renderValue(val){ padLabel.textContent = mode==='HR' ? `${Math.round(val)} bpm` : `${Math.round(val)} rpm`; }
+function compute(){
+  if(taps.length < 2) return;
+  const intervals = [];
+  for(let i=1;i<taps.length;i++) intervals.push(taps[i]-taps[i-1]);
+  const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+  renderValue(60000/avg);
+}
+
+// ===== Events =====
+pad.addEventListener('click', ()=>{
+  const now = Date.now();
+  if(!startTs){
+    startTs = now;
+    timerId = setInterval(()=>{ elapsedEl.textContent = `Elapsed: ${formatElapsed(Date.now()-startTs)}`; }, 200);
+  }
+  taps.push(now);
+  tapCountEl.textContent = `Taps: ${taps.length}`;
+  beep();
+  compute();
+});
+
+resetBtn.addEventListener('click', ()=>{ resetAll(); beep(); });
+modeBtn.addEventListener('click', ()=>{ mode = (mode==='HR' ? 'RR' : 'HR'); localStorage.setItem('mode', mode); modeBtn.textContent = `MODE: ${mode}`; resetAll(); beep(); });
+soundBtn.addEventListener('click', ()=>{ prefs.feedbackOn = !prefs.feedbackOn; updateSoundIcon(); savePrefs(); beep(); });
+
+settingsBtn.addEventListener('click', ()=> dlg.showModal());
+closeSettingsBtn.addEventListener('click', ()=> dlg.close());
+saveSettingsBtn.addEventListener('click', ()=>{ applyTheme(themeColor.value || '#69b10d'); savePrefs(); dlg.close(); });
+
+bgFile.addEventListener('change', ()=>{
+  const f = bgFile.files && bgFile.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { document.body.style.backgroundImage = `url(${r.result})`; prefs.bgDataUrl = r.result; savePrefs(); };
+  r.readAsDataURL(f);
+});
+clearBg.addEventListener('click', ()=>{ document.body.style.backgroundImage = 'none'; prefs.bgDataUrl = null; savePrefs(); });
+
+// ===== Theme & persist =====
+function applyTheme(hex){ document.documentElement.style.setProperty('--accent', hex); themeColor.value = hex; }
+function savePrefs(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(prefs)); }
+
+// init
+(function(){
+  applyTheme(prefs.accent || '#69b10d');
+  if(prefs.bgDataUrl){ document.body.style.backgroundImage = `url(${prefs.bgDataUrl})`; }
+  updateSoundIcon();
+  modeBtn.textContent = `MODE: ${mode}`;
+})();
+</script>
+</body>
+</html>
