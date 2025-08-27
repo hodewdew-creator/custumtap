@@ -35,7 +35,7 @@
     .btn.primary { background:var(--accent); color:#fff; box-shadow:0 10px 20px rgba(105,177,13,.25); }
     .btn.secondary { background:#eee; color:#111; }
     .btn.reset{ flex:1.8; }
-    .btn.custom{ flex:0.7; }
+    .btn.custum{ flex:0.7; }
 
     dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
     .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; position:relative; }
@@ -83,7 +83,7 @@
 
     <div class="bottom">
       <button class="btn primary reset" id="resetBtn">RESET</button>
-      <button class="btn secondary custom" id="customBtn">CUSTOM</button>
+      <button class="btn secondary custum" id="custumBtn">custum</button>
     </div>
   </div>
 
@@ -122,7 +122,7 @@ const padLabel = document.getElementById('padLabel');
 const tapCountEl = document.getElementById('tapCount');
 const elapsedEl = document.getElementById('elapsed');
 const resetBtn = document.getElementById('resetBtn');
-const customBtn = document.getElementById('customBtn');
+const custumBtn = document.getElementById('custumBtn');
 const soundBtn = document.getElementById('soundBtn');
 const dlg = document.getElementById('settings');
 const themeColor = document.getElementById('themeColor');
@@ -235,7 +235,7 @@ pad.addEventListener('click', ()=>{
 });
 
 resetBtn.addEventListener('click', ()=>{ resetAll(); beep(); });
-customBtn.addEventListener('click', ()=> dlg.showModal());
+custumBtn.addEventListener('click', ()=> dlg.showModal());
 soundBtn.addEventListener('click', ()=>{ prefs.feedbackOn = !prefs.feedbackOn; updateSoundIcon(); savePrefs(); beep(); });
 
 closeSettingsBtn.addEventListener('click', ()=>{
