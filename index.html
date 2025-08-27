@@ -5,21 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>my BPM counter</title>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; display:flex; flex-direction:column; height:100vh; background:#fff; background-size:cover; background-position:center; background-repeat:no-repeat; }
-  .ad-slot { height:60px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748b; border-bottom:1px solid #ddd; }
-  h1 { margin:16px; font-size:22px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; }
+  :root{ --accent:#69b10d; --stroke:#000; --padAlpha:1; }
+  body { font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0; padding:0; background:#fff; background-size:cover; background-position:center; background-repeat:no-repeat; }
+  /* 상단 광고 고정 */
+  .ad-slot { position:fixed; top:0; left:0; right:0; height:60px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:12px; color:#64748b; border-bottom:1px solid #ddd; z-index:10; }
+
+  /* 본문 래퍼: 화면 = 동적vh*100 - 광고 - 안전영역 */
+  .app{ height: calc((var(--vh, 1vh) * 100) - 60px - env(safe-area-inset-bottom, 0px)); padding-top:60px; display:flex; flex-direction:column; overflow:hidden; }
+
+  h1 { margin:12px 16px 8px; font-size:22px; font-weight:800; display:flex; justify-content:space-between; align-items:center; }
   .right { display:flex; align-items:center; gap:8px; }
-  .icon-btn { font-size:20px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
-  #soundBtn { font-size:18px; }
-  .pad { flex:1; display:flex; align-items:center; justify-content:center; border:3px solid var(--accent, #69b10d); margin:0 16px; border-radius:12px; user-select:none; background:rgba(255,255,255,0.7); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(3px); }
-  .pad-label { font-size:36px; font-weight:bold; color:var(--accent, #69b10d); }
-  .status { text-align:center; margin:8px 0; font-size:14px; }
-  .bottom { display:flex; justify-content:center; gap:10px; margin:12px; }
-  .btn { flex:1; height:48px; border:none; border-radius:10px; font-size:16px; font-weight:bold; cursor:pointer; }
-  .btn.primary { background:var(--accent, #69b10d); color:#fff; }
+  .icon-btn { font-size:18px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
+
+  /* TAP 박스 */
+  .pad { flex:1; display:flex; align-items:center; justify-content:center; position:relative; margin:0 16px; border:6px solid var(--accent); border-radius:14px; user-select:none; background:rgba(255,255,255,var(--padAlpha)); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); transition: transform 140ms ease; }
+  .pad.tapped { transform: scale(0.965); }
+  .pad-label { font-size:108px; font-weight:900; color:var(--accent); -webkit-text-stroke:1.6px var(--stroke); letter-spacing:.5px; text-shadow:0 1px 0 rgba(0,0,0,.12); }
+
+  /* 박스 하단 정보바 */
+  .pad-footer { position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:center; gap:18px; padding:8px 12px; border-radius:10px; background: rgba(255,255,255,0.6); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); font-weight:700; font-size:14px; letter-spacing:.4px; color:#374151; border:1px solid rgba(0,0,0,0.06); }
+  .pad-footer .label { opacity:.7; margin-right:4px; font-weight:600; }
+
+  .bottom { display:flex; gap:10px; margin:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .btn { flex:1; height:48px; border:none; border-radius:10px; font-size:16px; font-weight:800; cursor:pointer; }
+  .btn.primary { background:var(--accent); color:#fff; box-shadow:0 10px 20px rgba(105,177,13,.25); }
   .btn.secondary { background:#eee; color:#111; }
 
-  /* settings dialog */
+  /* 설정 다이얼로그 */
   dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
   .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; }
   .row { display:flex; align-items:center; gap:10px; }
@@ -28,23 +40,36 @@
   input[type="file"]{ font-size:14px; }
   .btns { display:flex; justify-content:flex-end; gap:8px; }
   .note { font-size:12px; color:#6b7280; }
+
+  @media (max-width:480px){ .pad-label{ font-size:112px; } }
 </style>
 </head>
 <body>
+  <!-- 고정 상단 광고 -->
   <div class="ad-slot">Ad slot (replace with ad script)</div>
-  <h1>
-    my BPM counter
-    <span class="right">
-      <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
-      <button class="icon-btn" id="soundBtn" title="Feedback On/Off">🔊</button>
-    </span>
-  </h1>
 
-  <div class="pad" id="pad"><div class="pad-label" id="padLabel">TAP!</div></div>
-  <div class="status"><span id="tapCount">Taps: 0</span> · <span id="elapsed">Elapsed: 0s</span></div>
-  <div class="bottom">
-    <button class="btn primary" id="resetBtn">RESET</button>
-    <button class="btn secondary" id="modeBtn">MODE: HR</button>
+  <div class="app">
+    <h1>
+      my BPM counter
+      <span class="right">
+        <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
+        <button class="icon-btn" id="soundBtn" title="Feedback On/Off">🔊</button>
+      </span>
+    </h1>
+
+    <div class="pad" id="pad">
+      <div class="pad-label" id="padLabel">TAP!</div>
+      <div class="pad-footer">
+        <div><span class="label">TAPS</span><span id="tapCount">0</span></div>
+        <div>·</div>
+        <div><span class="label">ELAPSED</span><span id="elapsed">0s</span></div>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <button class="btn primary" id="resetBtn">RESET</button>
+      <button class="btn secondary" id="modeBtn">MODE: HR</button>
+    </div>
   </div>
 
   <!-- Settings dialog -->
@@ -69,6 +94,9 @@
   </dialog>
 
 <script>
+// ===== Dynamic vh fallback for mobile browsers =====
+(function(){ const setVH=()=>{ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }; setVH(); window.addEventListener('resize', setVH); })();
+
 // ===== State =====
 let taps = [];
 let startTs = 0;
@@ -143,17 +171,18 @@ function beep(){
 }
 function updateSoundIcon(){ soundBtn.textContent = prefs.feedbackOn ? '🔊' : '🔇'; }
 
-// ===== Core compute (original app style: simple average) =====
+// ===== Core compute (simple average) =====
 function resetAll(){
   taps = [];
   startTs = 0;
   clearInterval(timerId); timerId=null;
   padLabel.textContent = 'TAP!';
-  tapCountEl.textContent = 'Taps: 0';
-  elapsedEl.textContent = 'Elapsed: 0s';
+  tapCountEl.textContent = '0';
+  elapsedEl.textContent = '0s';
+  document.documentElement.style.setProperty('--padAlpha','1');
 }
 function formatElapsed(ms){ return `${Math.floor(ms/1000)}s`; }
-function renderValue(val){ padLabel.textContent = mode==='HR' ? `${Math.round(val)} bpm` : `${Math.round(val)} rpm`; }
+function renderValue(val){ padLabel.textContent = `${Math.round(val)}`; }
 function compute(){
   if(taps.length < 2) return;
   const intervals = [];
@@ -162,15 +191,30 @@ function compute(){
   renderValue(60000/avg);
 }
 
+// ===== Transparency ramp by tap count (4 taps per step, 10 steps to 0.2) =====
+function updatePadAlphaByTaps(){
+  const n = Math.min(taps.length, 40);
+  const step = Math.floor(n / 4); // 0..10
+  const startA = 1.0, endA = 0.2, stepsTotal = 10;
+  const a = startA + ((endA - startA) * (step / stepsTotal));
+  document.documentElement.style.setProperty('--padAlpha', a.toFixed(3));
+}
+
 // ===== Events =====
 pad.addEventListener('click', ()=>{
   const now = Date.now();
   if(!startTs){
     startTs = now;
-    timerId = setInterval(()=>{ elapsedEl.textContent = `Elapsed: ${formatElapsed(Date.now()-startTs)}`; }, 200);
+    document.documentElement.style.setProperty('--padAlpha','1');
+    timerId = setInterval(()=>{ elapsedEl.textContent = `${formatElapsed(Date.now()-startTs)}`; }, 200);
   }
+  // tap animation
+  pad.classList.add('tapped');
+  setTimeout(()=> pad.classList.remove('tapped'), 140);
+
   taps.push(now);
-  tapCountEl.textContent = `Taps: ${taps.length}`;
+  tapCountEl.textContent = `${taps.length}`;
+  updatePadAlphaByTaps();
   beep();
   compute();
 });
@@ -187,21 +231,41 @@ bgFile.addEventListener('change', ()=>{
   const f = bgFile.files && bgFile.files[0];
   if(!f) return;
   const r = new FileReader();
-  r.onload = () => { document.body.style.backgroundImage = `url(${r.result})`; prefs.bgDataUrl = r.result; savePrefs(); };
+  r.onload = () => { document.body.style.backgroundImage = `url(${r.result})`; prefs.bgDataUrl = r.result; savePrefs(); updateStrokeByBackground(r.result); };
   r.readAsDataURL(f);
 });
-clearBg.addEventListener('click', ()=>{ document.body.style.backgroundImage = 'none'; prefs.bgDataUrl = null; savePrefs(); });
+clearBg.addEventListener('click', ()=>{ document.body.style.backgroundImage = 'none'; prefs.bgDataUrl = null; savePrefs(); document.documentElement.style.setProperty('--stroke','#000'); });
 
 // ===== Theme & persist =====
 function applyTheme(hex){ document.documentElement.style.setProperty('--accent', hex); themeColor.value = hex; }
 function savePrefs(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(prefs)); }
 
-// init
+// ===== Stroke auto (based on bg luminance) =====
+function updateStrokeByBackground(dataUrl){
+  if(!dataUrl){ document.documentElement.style.setProperty('--stroke', '#000'); return; }
+  try{
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      const w=32,h=32; c.width=w; c.height=h; const ctx=c.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      const d=ctx.getImageData(0,0,w,h).data; let sum=0,n=0;
+      for(let i=0;i<d.length;i+=4){ const r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255; const lum=0.2126*r+0.7152*g+0.0722*b; sum+=lum; n++; }
+      const avg=sum/n; const stroke= avg>0.6 ? '#000' : '#fff';
+      document.documentElement.style.setProperty('--stroke', stroke);
+    };
+    img.src=dataUrl;
+  }catch(e){ document.documentElement.style.setProperty('--stroke', '#000'); }
+}
+
+// ===== init =====
 (function(){
   applyTheme(prefs.accent || '#69b10d');
   if(prefs.bgDataUrl){ document.body.style.backgroundImage = `url(${prefs.bgDataUrl})`; }
   updateSoundIcon();
   modeBtn.textContent = `MODE: ${mode}`;
+  document.documentElement.style.setProperty('--padAlpha','1');
+  updateStrokeByBackground(prefs.bgDataUrl);
 })();
 </script>
 </body>
