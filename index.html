@@ -1,215 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <!-- 구글광고 넣기위해 사이트 소유주 확인) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8602787823938536"
-     crossorigin="anonymous"></script>
-    
-    <link rel="icon" href="image.png" type="image/png">
-    <link rel="apple-touch-icon" href="image.png">
-    <meta name="theme-color" content="#ffffff">
-    <link rel="manifest" href="manifest.json">
-  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>BPM counter</title>
   <style>
-    :root{ --accent:#69b10d; --outline:#000; --padAlpha:1; --padBlur:4px; --footerAlpha:0.6; --ad-h:60px; }
-    body { font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0; padding:0; background:#fff url('default-bg.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat; }
-
-    /* 상단 배너(iframe) + 고지문을 한 컨테이너로 묶고, 높이는 내용에 맞게 자동 */
-    .ad-slot { position:fixed; top:0; left:0; right:0; background:#f1f3f5; border-bottom:1px solid #ddd; z-index:10;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; gap:0; }
-    .ad-slot iframe { display:block; border:0; }
-    .ad-notice { margin:0; padding:2px 6px 4px; font-size:0.62rem; line-height:1.15; color:#6b7280; text-align:center; word-break:keep-all; }
-
-    /* 본문은 상단 고정 영역 높이만큼 패딩과 높이를 동적으로 맞춤 */
-    .app{ height: calc((var(--vh, 1vh) * 100) - var(--ad-h) - env(safe-area-inset-bottom, 0px)); padding-top: var(--ad-h); display:flex; flex-direction:column; overflow:hidden; }
-
-    h1 { margin:12px 16px 8px; font-size:22px; font-weight:800; display:flex; justify-content:space-between; align-items:center; }
-    .right { display:flex; align-items:center; gap:8px; }
-    .icon-btn { font-size:18px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
-
-    .pad { flex:1; display:flex; align-items:center; justify-content:center; position:relative; margin:0 16px; border:6px solid var(--accent); border-radius:14px; user-select:none; background:rgba(255,255,255,var(--padAlpha)); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(var(--padBlur)); -webkit-backdrop-filter: blur(var(--padBlur)); transition: transform 140ms ease; }
-    .pad.tapped { transform: scale(0.965); }
-    .pad-label { font-size:112px; font-weight:900; color:var(--accent); letter-spacing:.5px;
-      text-shadow:
-        0 0 0 var(--outline),
-        2px 0 0 var(--outline), -2px 0 0 var(--outline),
-        0 2px 0 var(--outline),  0 -2px 0 var(--outline),
-        2px 2px 0 var(--outline), -2px 2px 0 var(--outline),
-        2px -2px 0 var(--outline), -2px -2px 0 var(--outline);
-    }
-
-    .pad-footer { position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:center; gap:18px; padding:8px 12px; border-radius:10px; background: rgba(255,255,255,var(--footerAlpha)); backdrop-filter: blur(calc(var(--padBlur)/2)); -webkit-backdrop-filter: blur(calc(var(--padBlur)/2)); font-weight:700; font-size:14px; letter-spacing:.4px; color:#374151; border:1px solid rgba(0,0,0,0.06); }
-    .pad-footer .label { opacity:.7; margin-right:4px; font-weight:600; }
-
-    .bottom { display:flex; gap:10px; margin:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
-    .btn { flex:1; height:56px; border:none; border-radius:12px; font-size:18px; font-weight:800; cursor:pointer; }
-    .btn.primary { background:var(--accent); color:#fff; box-shadow:0 10px 20px rgba(105,177,13,.25); }
-    .btn.secondary { background:#eee; color:#111; }
-    .btn.reset{ flex:1.8; }
-    .btn.custom{ flex:0.7; }
-
-    dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
-    .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; position:relative; }
-    .row { display:flex; align-items:center; gap:10px; }
-    .row label { width:140px; font-size:14px; color:#374151; }
-    input[type="color"]{ width:44px; height:32px; border:none; padding:0; background:none; }
-    input[type="file"]{ font-size:14px; }
-    .btns { display:flex; justify-content:flex-end; gap:8px; }
-    .note { font-size:12px; color:#6b7280; }
-
-    .dialog-x { position:absolute; top:8px; right:10px; width:34px; height:34px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; display:grid; place-items:center; cursor:pointer; font-size:16px; line-height:1; }
-    .dialog-x:active { transform: scale(0.97); }
-
-    @media (max-width:480px){ .pad-label{ font-size:120px; } }
+    :root{ --accent:#69b10d; }
+    body{ font-family:sans-serif; margin:0; background:#f9fafb; }
+    .pad{ flex:1; display:flex; align-items:center; justify-content:center; border:6px solid var(--accent); margin:20px; border-radius:14px; }
+    .pad-label{ font-size:100px; font-weight:900; color:var(--accent); }
+    .bottom{ display:flex; gap:10px; margin:20px; }
+    .btn{ flex:1; height:50px; font-size:18px; font-weight:800; border:none; border-radius:12px; cursor:pointer; }
+    .btn.primary{ background:var(--accent); color:#fff; }
+    .btn.secondary{ background:#eee; }
+    dialog{ width:min(500px,90vw); border:none; border-radius:14px; padding:16px; }
+    .row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .row label{ width:120px; }
+    .chips{ display:flex; flex-wrap:wrap; gap:6px; }
+    .chip{ width:28px; height:28px; border-radius:6px; cursor:pointer; border:1px solid #ccc; }
   </style>
 </head>
 <body>
-  <!-- 상단: 배너 iframe + 고지문 (최소 높이, 찰싹 붙음) -->
-  <div class="ad-slot" id="adSlot">
-    <iframe src="https://ads-partners.coupang.com/widgets.html?id=915465&template=carousel&trackingCode=AF3609977&subId=&width=320&height=50&tsource=" width="320" height="55" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>
-    <div class="ad-notice">
-      <span class="first">* 본 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 <br> 수수료를 제공받습니다.
-      쿠팡 링크: <a href="https://link.coupang.com/a/AF3609977" target="_blank">https://link.coupang.com/a/AF3609977</a></span>
-    </div>
-  </div>
-
-  <div class="app">
-    <h1>
-      [BPM]
-      <span class="right">
-        <button class="icon-btn" id="soundBtn" title="Feedback On/Off">🔊</button>
-      </span>
-    </h1>
-
-    <div class="pad" id="pad">
-        <div class="pad-label" id="padLabel">TAP!</div>
-      <div class="pad-footer">
-        <div><span class="label">TAPS</span><span id="tapCount">0</span></div>
-        <div>·</div>
-        <div><span class="label">ELAPSED</span><span id="elapsed">0s</span></div>
-      </div>
-    </div>
-
-    <div class="bottom">
-      <button class="btn primary reset" id="resetBtn">RESET</button>
-      <button class="btn secondary custom" id="customBtn">custom</button>
-    </div>
+  <div class="pad" id="pad"><div class="pad-label" id="padLabel">TAP!</div></div>
+  <div class="bottom">
+    <button class="btn primary" id="resetBtn">RESET</button>
+    <button class="btn secondary" id="customBtn">custom</button>
   </div>
 
   <dialog id="settings">
-    <div class="sheet">
-      <button class="dialog-x" id="xClose" aria-label="Close settings">✕</button>
-      <h3 style="margin:6px 2px 0;">Personal interface</h3>
-      <div class="row">
-        <label for="themeColor">Theme color</label>
-        <input type="color" id="themeColor" value="#69b10d" />
+    <h3>Personal interface</h3>
+    <div class="row">
+      <label>Theme color</label>
+      <input type="color" id="themeColor" value="#69b10d">
+    </div>
+    <div class="row">
+      <label>Presets</label>
+      <div class="chips">
+        <div class="chip" style="background:#69b10d" data-color="#69b10d"></div>
+        <div class="chip" style="background:#003399" data-color="#003399"></div>
+        <div class="chip" style="background:#CC6699" data-color="#CC6699"></div>
+        <div class="chip" style="background:#ff6600" data-color="#ff6600"></div>
       </div>
-      <div class="row">
-        <label for="bgFile">Background image</label>
-        <input type="file" id="bgFile" accept="image/*" />
-        <button class="icon-btn" id="clearBg" title="Remove background">🧹</button>
-      </div>
-      <p class="note">Settings are saved locally and persist across restarts unless site data is cleared or the app is uninstalled.</p>
-      <div class="btns">
-        <button class="btn secondary" id="closeSettings">Reset</button>
-        <button class="btn primary" id="saveSettings">Save</button>
-      </div>
+    </div>
+    <div class="row">
+      <label>Background</label>
+      <input type="file" id="bgFile" accept="image/*">
+    </div>
+    <div style="text-align:right; margin-top:12px;">
+      <button class="btn secondary" id="resetSettings">Reset</button>
+      <button class="btn secondary" id="closeSettings">Cancel</button>
+      <button class="btn primary" id="saveSettings">Save</button>
     </div>
   </dialog>
 
 <script>
-// ====== 레이아웃 동기화(뷰포트/배너 높이) ======
-(function(){
-  const setVH = ()=>{ document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); };
-  const setAdH = ()=>{ const ad = document.getElementById('adSlot'); if(ad){ document.documentElement.style.setProperty('--ad-h', ad.offsetHeight + 'px'); } };
-  const onResize = ()=>{ setVH(); setAdH(); };
-  onResize(); window.addEventListener('resize', onResize); window.addEventListener('load', onResize);
-})();
+const pad=document.getElementById('pad');
+const padLabel=document.getElementById('padLabel');
+const resetBtn=document.getElementById('resetBtn');
+const customBtn=document.getElementById('customBtn');
+const dlg=document.getElementById('settings');
+const themeColor=document.getElementById('themeColor');
+const chips=document.querySelectorAll('.chip');
+const saveSettings=document.getElementById('saveSettings');
+const closeSettings=document.getElementById('closeSettings');
+const resetSettings=document.getElementById('resetSettings');
+const bgFile=document.getElementById('bgFile');
 
-// ====== BPM 로직 & 설정 ======
-(function(){
-  const SETTINGS_KEY = 'bpm_prefs_v1';
-  const pad = document.getElementById('pad');
-  const padLabel = document.getElementById('padLabel');
-  const tapCountEl = document.getElementById('tapCount');
-  const elapsedEl = document.getElementById('elapsed');
-  const resetBtn = document.getElementById('resetBtn');
-  const customBtn = document.getElementById('customBtn');
-  const soundBtn = document.getElementById('soundBtn');
-  const dlg = document.getElementById('settings');
-  const themeColor = document.getElementById('themeColor');
-  const bgFile = document.getElementById('bgFile');
-  const clearBg = document.getElementById('clearBg');
-  const saveSettingsBtn = document.getElementById('saveSettings');
-  const closeSettingsBtn = document.getElementById('closeSettings');
-  const xCloseBtn = document.getElementById('xClose');
+let prefs={accent:'#69b10d',bg:null};
 
-  let taps = []; let startTs = 0; let timerId = null;
-  let audioCtx = null;
+function applyTheme(hex){ document.documentElement.style.setProperty('--accent',hex); themeColor.value=hex; prefs.accent=hex; }
+function savePrefs(){ localStorage.setItem('bpm_prefs_v1',JSON.stringify(prefs)); }
+function loadPrefs(){ const raw=localStorage.getItem('bpm_prefs_v1'); if(raw){ prefs=JSON.parse(raw); applyTheme(prefs.accent); if(prefs.bg) document.body.style.backgroundImage='url('+prefs.bg+')'; }}
 
-  function loadPrefs(){
-    try{
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      if(!raw) return { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
-      const obj = JSON.parse(raw);
-      if(typeof obj.accent !== 'string') obj.accent = '#69b10d';
-      if(typeof obj.feedbackOn !== 'boolean') obj.feedbackOn = true;
-      return obj;
-    }catch(e){
-      return { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
-    }
+chips.forEach(chip=> chip.addEventListener('click',()=>{ applyTheme(chip.dataset.color); }));
+
+customBtn.addEventListener('click',()=> dlg.showModal());
+saveSettings.addEventListener('click',()=>{ savePrefs(); dlg.close(); });
+closeSettings.addEventListener('click',()=> dlg.close());
+
+// 설정 초기화(설정 화면의 Reset 버튼)
+if (resetSettings) {
+  resetSettings.addEventListener('click',()=>{
+    const ok = confirm('정말 설정을 초기화할까요?
+테마 색상과 배경이미지가 기본값으로 돌아갑니다.');
+    if(!ok) return;
+    localStorage.removeItem('bpm_prefs_v1');
+    prefs={accent:'#69b10d',bg:null};
+    applyTheme(prefs.accent);
+    document.body.style.backgroundImage='none';
+    if (bgFile) bgFile.value='';
+    themeColor.value=prefs.accent;
+    savePrefs();
+  });
+}
+
+bgFile.addEventListener('change',()=>{ const f=bgFile.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ prefs.bg=r.result; document.body.style.backgroundImage='url('+r.result+')'; }; r.readAsDataURL(f); });
+
+resetBtn.addEventListener('click',()=>{
+  // 메인 화면 리셋: 측정값만 초기화 (테마/배경은 보존)
+  padLabel.textContent='TAP!';
+}); prefs={accent:'#69b10d',bg:null}; applyTheme(prefs.accent); document.body.style.backgroundImage='none'; padLabel.textContent='TAP!';
   }
-  let prefs = loadPrefs();
+});
 
-  function applyTheme(hex){ document.documentElement.style.setProperty('--accent', hex); themeColor.value = hex; prefs.accent = hex; }
-  function savePrefs(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(prefs)); }
-  function updateOutlineByBackground(dataUrl){
-    if(!dataUrl){ document.documentElement.style.setProperty('--outline', '#000'); return; }
-    try{ const img = new Image(); img.onload = ()=>{ const c=document.createElement('canvas'); const w=32,h=32; c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,w,h); const d=ctx.getImageData(0,0,w,h).data; let sum=0,n=0; for(let i=0;i<d.length;i+=4){ const r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255; const lum=0.2126*r+0.7152*g+0.0722*b; sum+=lum; n++; } const avg=sum/n; const outline = avg>0.6 ? '#000' : '#fff'; document.documentElement.style.setProperty('--outline', outline); }; img.src=dataUrl; }catch(e){ document.documentElement.style.setProperty('--outline', '#000'); }
-  }
-
-  function updateSoundIcon(){ soundBtn.textContent = prefs.feedbackOn ? '🔊' : '🔇'; }
-  function ensureAudio(){ if(!audioCtx){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx=null; } } else if(audioCtx.state==='suspended'){ audioCtx.resume().catch(()=>{}); } }
-  function beep(){ if(!prefs.feedbackOn) return; let ok=false; try{ ensureAudio(); if(audioCtx){ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.0001; o.connect(g).connect(audioCtx.destination); const t=audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.18, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+0.10); o.start(t); o.stop(t+0.11); ok=true; } }catch(e){ ok=false; } if(!ok && navigator.vibrate){ navigator.vibrate(18); } }
-
-  function resetAll(){ taps=[]; startTs=0; clearInterval(timerId); timerId=null; padLabel.textContent='TAP!'; tapCountEl.textContent='0'; elapsedEl.textContent='0s'; document.documentElement.style.setProperty('--padAlpha','1'); document.documentElement.style.setProperty('--padBlur','4px'); document.documentElement.style.setProperty('--footerAlpha','0.6'); }
-  function formatElapsed(ms){ return `${Math.floor(ms/1000)}s`; }
-  function renderValue(val){ padLabel.textContent = `${Math.round(val)}`; }
-  function compute(){ if(taps.length<2) return; const intervals=[]; for(let i=1;i<taps.length;i++) intervals.push(taps[i]-taps[i-1]); const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length; renderValue(60000/avg); }
-
-  function updatePadAlphaByTaps(){ const n=Math.min(taps.length,15); const t = (Math.floor(n/1.5))/10; const a=1 + ((0 - 1) * t); const b=4 + ((0 - 4) * t); const f=0.6 + ((0.05 - 0.6) * t); document.documentElement.style.setProperty('--padAlpha', a.toFixed(3)); document.documentElement.style.setProperty('--padBlur', b.toFixed(2)+'px'); document.documentElement.style.setProperty('--footerAlpha', f.toFixed(3)); }
-
-  // 초기 적용
-  applyTheme(prefs.accent || '#69b10d');
-  if(prefs.bgDataUrl){ document.body.style.backgroundImage = `url(${prefs.bgDataUrl})`; updateOutlineByBackground(prefs.bgDataUrl); }
-  updateSoundIcon();
-
-  // 이벤트
-  function handleTap(){
-    const now = Date.now();
-    if(!startTs){ startTs=now; document.documentElement.style.setProperty('--padAlpha','1'); document.documentElement.style.setProperty('--padBlur','4px'); document.documentElement.style.setProperty('--footerAlpha','0.6'); timerId=setInterval(()=>{ elapsedEl.textContent = formatElapsed(Date.now()-startTs); }, 200); }
-    pad.classList.add('tapped'); setTimeout(()=> pad.classList.remove('tapped'), 140);
-    taps.push(now); tapCountEl.textContent = String(taps.length); updatePadAlphaByTaps(); beep(); compute();
-  }
-  pad.addEventListener('click', handleTap);
-  pad.addEventListener('touchstart', (e)=>{ e.preventDefault(); handleTap(); }, {passive:false});
-
-  resetBtn.addEventListener('click', ()=>{ resetAll(); beep(); });
-  customBtn.addEventListener('click', ()=> dlg.showModal());
-  soundBtn.addEventListener('click', ()=>{ prefs.feedbackOn = !prefs.feedbackOn; updateSoundIcon(); savePrefs(); beep(); });
-
-  closeSettingsBtn.addEventListener('click', ()=>{ const def='#69b10d'; applyTheme(def); prefs.accent=def; document.body.style.backgroundImage='none'; prefs.bgDataUrl=null; document.documentElement.style.setProperty('--outline','#000'); savePrefs(); });
-  saveSettingsBtn.addEventListener('click', ()=>{ const hex=themeColor.value||'#69b10d'; applyTheme(hex); savePrefs(); dlg.close(); });
-  if(xCloseBtn){ xCloseBtn.addEventListener('click', ()=> dlg.close()); }
-
-  bgFile.addEventListener('change', ()=>{ const f=bgFile.files && bgFile.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ document.body.style.backgroundImage=`url(${r.result})`; prefs.bgDataUrl=r.result; savePrefs(); updateOutlineByBackground(r.result); }; r.readAsDataURL(f); });
-  clearBg.addEventListener('click', ()=>{ document.body.style.backgroundImage='none'; prefs.bgDataUrl=null; savePrefs(); document.documentElement.style.setProperty('--outline','#000'); });
-})();
+loadPrefs();
 </script>
 </body>
 </html>
+
 
