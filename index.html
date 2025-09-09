@@ -1,105 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- 구글광고 (소유주 확인) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8602787823938536" crossorigin="anonymous"></script>
-
   <link rel="icon" href="image.png" type="image/png">
   <link rel="apple-touch-icon" href="image.png">
   <meta name="theme-color" content="#ffffff">
   <link rel="manifest" href="manifest.json">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>BPM counter</title>
   <style>
-    :root{
-      --accent:#69b10d; --outline:#000;
-      --padAlpha:1; --padBlur:4px; --footerAlpha:0.6;
-      --ad-h:60px;
-      --vh: 1vh;
-    }
-    body {
-      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      margin:0; padding:0;
-      background:#fff url('default-bg.jpg');
-      background-size:cover; background-position:center; background-repeat:no-repeat;
-    }
-
-    /* 상단 배너 */
-    .ad-slot {
-      position:fixed; top:0; left:0; right:0;
-      background:#f1f3f5; border-bottom:1px solid #ddd; z-index:10;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; gap:0;
-    }
+    :root{ --accent:#69b10d; --outline:#000; --padAlpha:1; --padBlur:4px; --footerAlpha:0.6; --ad-h:60px; --vh:1vh; }
+    body { font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0; padding:0; background:#fff url('default-bg.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat; }
+    .ad-slot { position:fixed; top:0; left:0; right:0; background:#f1f3f5; border-bottom:1px solid #ddd; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; gap:0; }
     .ad-slot iframe { display:block; border:0; }
     .ad-notice { margin:0; padding:2px 6px 4px; font-size:0.62rem; line-height:1.15; color:#6b7280; text-align:center; word-break:keep-all; }
-
-    /* 본문 */
-    .app{
-      height: calc((var(--vh, 1vh) * 100) - var(--ad-h) - env(safe-area-inset-bottom, 0px));
-      padding-top: var(--ad-h);
-      display:flex; flex-direction:column; overflow:hidden;
-    }
-
+    .app{ height: calc((var(--vh, 1vh) * 100) - var(--ad-h) - env(safe-area-inset-bottom, 0px)); padding-top: var(--ad-h); display:flex; flex-direction:column; overflow:hidden; }
     h1 { margin:12px 16px 8px; font-size:22px; font-weight:800; display:flex; justify-content:space-between; align-items:center; }
     .right { display:flex; align-items:center; gap:8px; }
     .icon-btn { font-size:18px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; }
-
-    .pad {
-      flex:1; display:flex; align-items:center; justify-content:center; position:relative; margin:0 16px;
-      border:6px solid var(--accent); border-radius:14px; user-select:none;
-      background:rgba(255,255,255,var(--padAlpha)); box-shadow:0 8px 20px rgba(0,0,0,.06);
-      backdrop-filter: blur(var(--padBlur)); -webkit-backdrop-filter: blur(var(--padBlur));
-      transition: transform 140ms ease;
-    }
+    .pad { flex:1; display:flex; align-items:center; justify-content:center; position:relative; margin:0 16px; border:6px solid var(--accent); border-radius:14px; user-select:none; background:rgba(255,255,255,var(--padAlpha)); box-shadow:0 8px 20px rgba(0,0,0,.06); backdrop-filter: blur(var(--padBlur)); -webkit-backdrop-filter: blur(var(--padBlur)); transition: transform 140ms ease; }
     .pad.tapped { transform: scale(0.965); }
-    .pad-label {
-      font-size:112px; font-weight:900; color:var(--accent); letter-spacing:.5px;
-      text-shadow:
-        0 0 0 var(--outline),
-        2px 0 0 var(--outline), -2px 0 0 var(--outline),
-        0 2px 0 var(--outline),  0 -2px 0 var(--outline),
-        2px 2px 0 var(--outline), -2px 2px 0 var(--outline),
-        2px -2px 0 var(--outline), -2px -2px 0 var(--outline);
-    }
-
-    .pad-footer {
-      position:absolute; left:10px; right:10px; bottom:10px;
-      display:flex; justify-content:center; gap:18px; padding:8px 12px;
-      border-radius:10px; background: rgba(255,255,255,var(--footerAlpha));
-      backdrop-filter: blur(calc(var(--padBlur)/2)); -webkit-backdrop-filter: blur(calc(var(--padBlur)/2));
-      font-weight:700; font-size:14px; letter-spacing:.4px; color:#374151; border:1px solid rgba(0,0,0,0.06);
-    }
+    .pad-label { font-size:112px; font-weight:900; color:var(--accent); letter-spacing:.5px; text-shadow: 0 0 0 var(--outline), 2px 0 0 var(--outline), -2px 0 0 var(--outline), 0 2px 0 var(--outline),  0 -2px 0 var(--outline), 2px 2px 0 var(--outline), -2px 2px 0 var(--outline), 2px -2px 0 var(--outline), -2px -2px 0 var(--outline); }
+    .pad-footer { position:absolute; left:10px; right:10px; bottom:10px; display:flex; justify-content:center; gap:18px; padding:8px 12px; border-radius:10px; background: rgba(255,255,255,var(--footerAlpha)); backdrop-filter: blur(calc(var(--padBlur)/2)); -webkit-backdrop-filter: blur(calc(var(--padBlur)/2)); font-weight:700; font-size:14px; letter-spacing:.4px; color:#374151; border:1px solid rgba(0,0,0,0.06); }
     .pad-footer .label { opacity:.7; margin-right:4px; font-weight:600; }
-
     .bottom { display:flex; gap:10px; margin:12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
     .btn { flex:1; height:56px; border:none; border-radius:12px; font-size:18px; font-weight:800; cursor:pointer; }
     .btn.primary { background:var(--accent); color:#fff; box-shadow:0 10px 20px rgba(105,177,13,.25); }
     .btn.secondary { background:#eee; color:#111; }
     .btn.reset{ flex:1.8; }
     .btn.custom{ flex:0.7; }
-
     dialog { width:min(520px, 92vw); border:none; border-radius:16px; padding:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.25); }
     .sheet { background:#fff; padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; position:relative; }
     .row { display:flex; align-items:center; gap:10px; }
     .row label { width:140px; font-size:14px; color:#374151; }
-    input[type="color"]{ width:44px; height:32px; border:none; padding:0; background:none; }
-    input[type="file"]{ font-size:14px; }
+    input[type='color']{ width:44px; height:32px; border:none; padding:0; background:none; }
+    input[type='file']{ font-size:14px; }
     .btns { display:flex; justify-content:flex-end; gap:8px; }
     .note { font-size:12px; color:#6b7280; }
     .dialog-x { position:absolute; top:8px; right:10px; width:34px; height:34px; border:1px solid #e5e7eb; background:#fff; border-radius:10px; display:grid; place-items:center; cursor:pointer; font-size:16px; line-height:1; }
     .dialog-x:active { transform: scale(0.97); }
-
+    .chip { width:28px; height:28px; border-radius:8px; border:1px solid #e5e7eb; cursor:pointer; }
+    .chip:active { transform: scale(0.96); }
     @media (max-width:480px){ .pad-label{ font-size:120px; } }
   </style>
 </head>
 <body>
-  <!-- 상단: 배너 iframe + 고지문 -->
   <div class="ad-slot" id="adSlot">
-    <iframe src="https://ads-partners.coupang.com/widgets.html?id=915465&template=carousel&trackingCode=AF3609977&subId=&width=320&height=50&tsource="
-            width="320" height="55" frameborder="0" scrolling="no"
-            referrerpolicy="unsafe-url" browsingtopics></iframe>
+    <iframe src="https://ads-partners.coupang.com/widgets.html?id=915465&template=carousel&trackingCode=AF3609977&subId=&width=320&height=50&tsource=" width="320" height="55" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>
     <div class="ad-notice">
       <span class="first">* 본 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 <br> 수수료를 제공받습니다.
       쿠팡 링크: <a href="https://link.coupang.com/a/AF3609977" target="_blank">https://link.coupang.com/a/AF3609977</a></span>
@@ -140,6 +88,22 @@
         <button class="icon-btn" id="openAdvPicker" title="Advanced color picker">🎨</button>
       </div>
 
+      <!-- Preset color chips -->
+      <div class="row" id="presetRow">
+        <label>Presets</label>
+        <div id="presetChips" style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button class="chip" data-color="#69b10d" title="#69b10d" style="background:#69b10d"></button>
+          <button class="chip" data-color="#003399" title="#003399" style="background:#003399"></button>
+          <button class="chip" data-color="#330066" title="#330066" style="background:#330066"></button>
+          <button class="chip" data-color="#CC6699" title="#CC6699" style="background:#CC6699"></button>
+          <button class="chip" data-color="#2563eb" title="#2563eb" style="background:#2563eb"></button>
+          <button class="chip" data-color="#10b981" title="#10b981" style="background:#10b981"></button>
+          <button class="chip" data-color="#f59e0b" title="#f59e0b" style="background:#f59e0b"></button>
+          <button class="chip" data-color="#ef4444" title="#ef4444" style="background:#ef4444"></button>
+          <button class="chip" data-color="#111827" title="#111827" style="background:#111827"></button>
+        </div>
+      </div>
+
       <!-- Advanced Picker (Android-friendly) -->
       <div id="advPicker" style="display:none; gap:10px; padding:8px 10px; border:1px solid #e5e7eb; border-radius:12px;">
         <div style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:8px;">
@@ -148,9 +112,7 @@
             <div id="svOverlayBlack" style="position:absolute; inset:0; background:linear-gradient(0deg,#000,rgba(0,0,0,0)); mix-blend-mode:multiply;"></div>
             <div id="svKnob" style="position:absolute; width:16px; height:16px; border:2px solid #fff; border-radius:999px; box-shadow:0 0 0 1px rgba(0,0,0,.4); transform:translate(-8px,-8px);"></div>
           </div>
-          <input id="hue" type="range" min="0" max="360" value="100"
-                 style="-webkit-appearance:none; appearance:none; height:12px; border-radius:999px;
-                        background:linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red); outline:none;"/>
+          <input id="hue" type="range" min="0" max="360" value="100" style="-webkit-appearance:none; appearance:none; height:12px; border-radius:999px; background:linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red); outline:none;"/>
           <div style="display:flex; align-items:center; gap:10px;">
             <div id="preview" style="width:28px; height:28px; border-radius:8px; border:1px solid #e5e7eb;"></div>
             <code id="hexOut" style="font-size:12px; color:#374151;">#69b10d</code>
@@ -177,7 +139,7 @@
   </dialog>
 
 <script>
-/* ====== 레이아웃 동기화(뷰포트/배너 높이) ====== */
+// Layout sync
 (function(){
   const setVH = ()=>{ document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); };
   const setAdH = ()=>{ const ad = document.getElementById('adSlot'); if(ad){ document.documentElement.style.setProperty('--ad-h', ad.offsetHeight + 'px'); } };
@@ -185,7 +147,7 @@
   onResize(); window.addEventListener('resize', onResize); window.addEventListener('load', onResize);
 })();
 
-/* ====== BPM 로직 & 설정 ====== */
+// App logic
 (function(){
   const SETTINGS_KEY = 'bpm_prefs_v1';
   const pad = document.getElementById('pad');
@@ -202,8 +164,6 @@
   const saveSettingsBtn = document.getElementById('saveSettings');
   const closeSettingsBtn = document.getElementById('closeSettings');
   const xCloseBtn = document.getElementById('xClose');
-
-  // --- Advanced picker refs ---
   const advPicker = document.getElementById('advPicker');
   const openAdvBtn = document.getElementById('openAdvPicker');
   const hueInput = document.getElementById('hue');
@@ -213,6 +173,7 @@
   const hexOut = document.getElementById('hexOut');
   const advApply = document.getElementById('advApply');
   const advCancel = document.getElementById('advCancel');
+  const presetChips = document.querySelectorAll('#presetChips .chip');
 
   let taps = []; let startTs = 0; let timerId = null;
   let audioCtx = null;
@@ -231,61 +192,18 @@
   }
   let prefs = loadPrefs();
 
-  function applyTheme(hex){
-    document.documentElement.style.setProperty('--accent', hex);
-    themeColor.value = hex;
-    prefs.accent = hex;
-  }
+  function applyTheme(hex){ document.documentElement.style.setProperty('--accent', hex); themeColor.value = hex; prefs.accent = hex; }
   function savePrefs(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(prefs)); }
 
   function updateSoundIcon(){ soundBtn.textContent = prefs.feedbackOn ? '🔊' : '🔇'; }
-  function ensureAudio(){
-    if(!audioCtx){
-      try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx=null; }
-    } else if(audioCtx.state==='suspended'){ audioCtx.resume().catch(()=>{}); }
-  }
-  function beep(){
-    if(!prefs.feedbackOn) return;
-    let ok=false;
-    try{
-      ensureAudio();
-      if(audioCtx){
-        const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
-        o.type='sine'; o.frequency.value=880; g.gain.value=0.0001; o.connect(g).connect(audioCtx.destination);
-        const t=audioCtx.currentTime;
-        g.gain.exponentialRampToValueAtTime(0.18, t+0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, t+0.10);
-        o.start(t); o.stop(t+0.11); ok=true;
-      }
-    }catch(e){ ok=false; }
-    if(!ok && navigator.vibrate){ navigator.vibrate(18); }
-  }
+  function ensureAudio(){ if(!audioCtx){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audioCtx=null; } } else if(audioCtx.state==='suspended'){ audioCtx.resume().catch(()=>{}); } }
+  function beep(){ if(!prefs.feedbackOn) return; let ok=false; try{ ensureAudio(); if(audioCtx){ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.0001; o.connect(g).connect(audioCtx.destination); const t=audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.18, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+0.10); o.start(t); o.stop(t+0.11); ok=true; } }catch(e){ ok=false; } if(!ok && navigator.vibrate){ navigator.vibrate(18); } }
 
-  function resetAll(){
-    taps=[]; startTs=0; clearInterval(timerId); timerId=null;
-    padLabel.textContent='TAP!'; tapCountEl.textContent='0'; elapsedEl.textContent='0s';
-    document.documentElement.style.setProperty('--padAlpha','1');
-    document.documentElement.style.setProperty('--padBlur','4px');
-    document.documentElement.style.setProperty('--footerAlpha','0.6');
-  }
+  function resetAll(){ taps=[]; startTs=0; clearInterval(timerId); timerId=null; padLabel.textContent='TAP!'; tapCountEl.textContent='0'; elapsedEl.textContent='0s'; document.documentElement.style.setProperty('--padAlpha','1'); document.documentElement.style.setProperty('--padBlur','4px'); document.documentElement.style.setProperty('--footerAlpha','0.6'); }
   function formatElapsed(ms){ return Math.floor(ms/1000)+'s'; }
   function renderValue(val){ padLabel.textContent = String(Math.round(val)); }
-  function compute(){
-    if(taps.length<2) return;
-    const intervals=[]; for(let i=1;i<taps.length;i++) intervals.push(taps[i]-taps[i-1]);
-    const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
-    renderValue(60000/avg);
-  }
-  function updatePadAlphaByTaps(){
-    const n=Math.min(taps.length,15);
-    const t = (Math.floor(n/1.5))/10; // 0~1
-    const a=1 + ((0 - 1) * t);
-    const b=4 + ((0 - 4) * t);
-    const f=0.6 + ((0.05 - 0.6) * t);
-    document.documentElement.style.setProperty('--padAlpha', a.toFixed(3));
-    document.documentElement.style.setProperty('--padBlur', b.toFixed(2)+'px');
-    document.documentElement.style.setProperty('--footerAlpha', f.toFixed(3));
-  }
+  function compute(){ if(taps.length<2) return; const intervals=[]; for(let i=1;i<taps.length;i++) intervals.push(taps[i]-taps[i-1]); const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length; renderValue(60000/avg); }
+  function updatePadAlphaByTaps(){ const n=Math.min(taps.length,15); const t = (Math.floor(n/1.5))/10; const a=1 + ((0 - 1) * t); const b=4 + ((0 - 4) * t); const f=0.6 + ((0.05 - 0.6) * t); document.documentElement.style.setProperty('--padAlpha', a.toFixed(3)); document.documentElement.style.setProperty('--padBlur', b.toFixed(2)+'px'); document.documentElement.style.setProperty('--footerAlpha', f.toFixed(3)); }
 
   // 초기 적용
   applyTheme(prefs.accent || '#69b10d');
@@ -309,10 +227,23 @@
   pad.addEventListener('click', handleTap);
   pad.addEventListener('touchstart', (e)=>{ e.preventDefault(); handleTap(); }, {passive:false});
 
-  resetBtn.addEventListener('click', ()=>{ resetAll(); beep(); });
+  // Reset with confirmation (clears settings & background)
+  resetBtn.addEventListener('click', ()=>{
+    const ok = confirm('정말 초기화할까요?\\n테마 색상과 배경이미지도 기본값으로 돌아갑니다.');
+    if(!ok) return;
+    localStorage.removeItem(SETTINGS_KEY);
+    prefs = { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
+    applyTheme('#69b10d');
+    document.body.style.backgroundImage='none';
+    savePrefs();
+    resetAll();
+    beep();
+  });
+
   customBtn.addEventListener('click', ()=> dlg.showModal());
   soundBtn.addEventListener('click', ()=>{ prefs.feedbackOn = !prefs.feedbackOn; updateSoundIcon(); savePrefs(); beep(); });
 
+  // Settings dialog buttons
   closeSettingsBtn.addEventListener('click', ()=>{
     const def='#69b10d';
     applyTheme(def); prefs.accent=def;
@@ -322,6 +253,7 @@
   saveSettingsBtn.addEventListener('click', ()=>{ const hex=themeColor.value||'#69b10d'; applyTheme(hex); savePrefs(); dlg.close(); });
   if(xCloseBtn){ xCloseBtn.addEventListener('click', ()=> dlg.close()); }
 
+  // Background image
   bgFile.addEventListener('change', ()=>{
     const f=bgFile.files && bgFile.files[0]; if(!f) return;
     const r=new FileReader();
@@ -330,14 +262,28 @@
   });
   clearBg.addEventListener('click', ()=>{ document.body.style.backgroundImage='none'; prefs.bgDataUrl=null; savePrefs(); });
 
-  /* ====== Android만 고급 컬러 피커 노출 (+ 테스트 스위치) ====== */
+  // Android-only advanced picker (+ test switch)
   const isAndroid = /Android/i.test(navigator.userAgent);
   const forceAdv = new URLSearchParams(location.search).get('forceAdv') === '1';
   if (openAdvBtn) openAdvBtn.style.display = (isAndroid || forceAdv) ? 'grid' : 'none';
 
-  // HSV 상태
-  let H = 100, S = 0.7, V = 0.7;
+  // Preset chips behavior
+  presetChips.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const c = btn.getAttribute('data-color');
+      if(!c) return;
+      applyTheme(c);
+      savePrefs();
+      // if adv picker open, reflect in preview
+      if (advPicker && advPicker.style.display!=='none') {
+        hexOut.textContent = c;
+        if (preview) preview.style.background = c;
+      }
+    });
+  });
 
+  // HSV picker internals
+  let H = 100, S = 0.7, V = 0.7;
   function hsvToRgb(h, s, v){
     const c = v * s; const x = c * (1 - Math.abs(((h/60)%2) - 1)); const m = v - c;
     let r=0,g=0,b=0;
@@ -383,10 +329,7 @@
     if (hexOut) hexOut.textContent = hex;
     themeColor.value = hex; // native input 동기화
   }
-  function positionKnob(px,py){
-    if(!svKnob) return;
-    svKnob.style.left = px+'px'; svKnob.style.top = py+'px';
-  }
+  function positionKnob(px,py){ if(!svKnob) return; svKnob.style.left = px+'px'; svKnob.style.top = py+'px'; }
   function handleSV(clientX, clientY){
     if(!svBox) return;
     const rect = svBox.getBoundingClientRect();
@@ -441,5 +384,3 @@
 </script>
 </body>
 </html>
-
-
