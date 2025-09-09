@@ -14,7 +14,7 @@
 
   <style>
     :root{
-      --accent:#69b10d; --outline:#000;
+      --accent:#5a8af2; --outline:#000;
       --padAlpha:1; --padBlur:4px; --footerAlpha:0.6;
       --ad-h:60px; --vh:1vh;
     }
@@ -126,7 +126,7 @@
 
       <div class="row">
         <label for="themeColor">Theme color</label>
-        <input type="color" id="themeColor" value="#69b10d" />
+        <input type="color" id="themeColor" value="#5a8af2" />
         <button class="icon-btn" id="openAdvPicker" title="Advanced color picker">🎨</button>
       </div>
 
@@ -134,7 +134,7 @@
       <div class="row">
         <label>Presets</label>
         <div id="presetChips" style="display:flex; flex-wrap:wrap; gap:8px;">
-          <button class="chip" data-color="#69b10d" title="#69b10d" style="background:#69b10d"></button>
+          <button class="chip" data-color="#5a8af2" title="#5a8af2" style="background:#5a8af2"></button>
           <button class="chip" data-color="#003399" title="#003399" style="background:#003399"></button>
           <button class="chip" data-color="#330066" title="#330066" style="background:#330066"></button>
           <button class="chip" data-color="#CC6699" title="#CC6699" style="background:#CC6699"></button>
@@ -159,7 +159,7 @@
                         background:linear-gradient(90deg, red, yellow, lime, cyan, blue, magenta, red); outline:none;"/>
           <div style="display:flex; align-items:center; gap:10px;">
             <div id="preview" style="width:28px; height:28px; border-radius:8px; border:1px solid #e5e7eb;"></div>
-            <code id="hexOut" style="font-size:12px; color:#374151;">#69b10d</code>
+            <code id="hexOut" style="font-size:12px; color:#374151;">#5a8af2</code>
           </div>
         </div>
         <div style="display:flex; flex-direction:column; gap:6px; justify-content:flex-end;">
@@ -227,13 +227,13 @@
   function loadPrefs(){
     try{
       const raw = localStorage.getItem(SETTINGS_KEY);
-      if(!raw) return { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
+      if(!raw) return { accent:'#5a8af2', bgDataUrl:null, feedbackOn:true };
       const obj = JSON.parse(raw);
-      if(typeof obj.accent !== 'string') obj.accent = '#69b10d';
+      if(typeof obj.accent !== 'string') obj.accent = '#5a8af2';
       if(typeof obj.feedbackOn !== 'boolean') obj.feedbackOn = true;
       return obj;
     }catch(e){
-      return { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
+      return { accent:'#5a8af2', bgDataUrl:null, feedbackOn:true };
     }
   }
   let prefs = loadPrefs();
@@ -252,7 +252,7 @@
   function updatePadAlphaByTaps(){ const n=Math.min(taps.length,15); const t = (Math.floor(n/1.5))/10; const a=1 + ((0 - 1) * t); const b=4 + ((0 - 4) * t); const f=0.6 + ((0.05 - 0.6) * t); document.documentElement.style.setProperty('--padAlpha', a.toFixed(3)); document.documentElement.style.setProperty('--padBlur', b.toFixed(2)+'px'); document.documentElement.style.setProperty('--footerAlpha', f.toFixed(3)); }
 
   // Init
-  applyTheme(prefs.accent || '#69b10d');
+  applyTheme(prefs.accent || '#5a8af2');
   if(prefs.bgDataUrl){ document.body.style.backgroundImage = 'url('+prefs.bgDataUrl+')'; }
   updateSoundIcon();
 
@@ -282,14 +282,14 @@
 
   document.getElementById('closeSettings').addEventListener('click', ()=> dlg.close());
   document.getElementById('saveSettings').addEventListener('click', ()=>{
-    const hex=themeColor.value||'#69b10d'; applyTheme(hex); savePrefs(); dlg.close();
+    const hex=themeColor.value||'#5a8af2'; applyTheme(hex); savePrefs(); dlg.close();
   });
   document.getElementById('resetSettings').addEventListener('click', ()=>{
     const ok = confirm('정말 설정을 초기화할까요?\n테마 색상과 배경이미지가 기본값으로 돌아갑니다.');
     if(!ok) return;
     localStorage.removeItem(SETTINGS_KEY);
-    prefs = { accent:'#69b10d', bgDataUrl:null, feedbackOn:true };
-    applyTheme('#69b10d');
+    prefs = { accent:'#5a8af2', bgDataUrl:null, feedbackOn:true };
+    applyTheme('#5a8af2');
     document.body.style.backgroundImage='none';
     if (bgFile) bgFile.value='';
     savePrefs();
@@ -382,7 +382,7 @@
     positionKnob(x,y); updatePreview();
   }
   function openAdv(){
-    const hsv = hexToHsvSafe(themeColor.value || '#69b10d');
+    const hsv = hexToHsvSafe(themeColor.value || '#5a8af2');
     H=hsv.h; S=hsv.s; V=hsv.v;
     if (hueInput) hueInput.value = String(Math.round(H));
     refreshSVBackground();
